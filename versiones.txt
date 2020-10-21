@@ -1,0 +1,257 @@
+#include <stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+int i;
+int j;
+int dimension=7; char tablero[7][7];int opcion=-9; void initTablero(); int imprimirTablero(); void foo();int menu(void);void insertar(void);
+
+/* run this program using the console pauser or add your own getch, system("pause") or input loop */
+int main(void)
+{
+	foo();
+	initTablero();
+	imprimirTablero();
+	insertar();
+	return 0;
+ } 
+ 
+
+
+void initTablero(){
+	for(i=0;i< dimension;i++) {
+		for( j= 0; j < dimension; j++)	{
+		tablero[i][j]=186;
+		if(j>0&&j<6){
+			tablero[i][j]=205;
+		}
+		tablero[3][3]='+';
+		if(i==0&&j==0||i==0&&j==3||i==0&&j==6||i==1&&j==1||i==1&&j==3||i==1&&j==5||i==2&&j==2||i==2&&j==3||i==2&&j==4||i==3&&j==0||i==3&&j==1||i==3&&j==2||i==3&&j==4||i==3&&j==5||i==3&&j==6||i==4&&j==2||i==4&&j==3||i==4&&j==4||i==5&&j==1||i==5&&j==3||i==5&&j==5||i==6&&j==0||i==6&&j==3||i==6&&j==6) {
+			tablero[i][j]='O';
+		}
+		}
+	}
+}
+
+void insertar(void){
+	int x;
+	char posicionI[512];
+	char posicionJ[512];
+	for(x=0;x<18;x++){
+		if(x%2==0){
+			printf("	PLAYER 1\n");
+		}
+		else if(x%2!=0){
+			printf("	PLAYER 2\n");
+		}
+		printf("Inserte la posicion de Fila: ");
+		scanf("%s", posicionI,stdin);
+		printf("Inserte la posicion de Columna: ");
+		scanf("%s", posicionJ,stdin);
+		if(tablero[atoi(posicionI)-1][atoi(posicionJ)-1]=='O'&&x%2==0){
+			tablero[atoi(posicionI)-1][atoi(posicionJ)-1]='1';
+	}
+		if(tablero[atoi(posicionI)-1][atoi(posicionJ)-1]=='O'&&x%2!=0){
+			tablero[atoi(posicionI)-1][atoi(posicionJ)-1]='2';		
+	}
+		imprimirTablero();
+	}
+	
+}
+
+
+
+
+
+
+int imprimirTablero(){
+	
+	printf("\n\n           A         B         C         D         F         G         H");
+	for(i = 0; i < dimension; i++ ){
+		printf("\n");
+		printf("\n");
+		printf("\n");
+		printf("%d-",i);
+		for( j= 0; j < dimension; j++){
+			
+			if(tablero[i][j]=='O'||tablero[i][j]=='1'||tablero[i][j]=='2'){
+				printf("       [%c]", tablero[i][j]);
+			}else printf("        %c ", tablero[i][j]);
+		}
+	 printf("\n");
+	}
+	return 0;
+}
+
+void foo() {
+	   FILE *title;
+   int c;
+   int counter=0;
+   title = fopen("foo.txt","r");
+   while(1) {
+      c = fgetc(title);
+      counter++;
+      if( counter==1512 ) { 
+         break ;
+      }
+      printf("%c", c);
+   }
+   fclose(title);
+}
+int menu(void){
+ 	char input = 0;
+	printf("Bienvenido a Cowboy Checkers!(Usar Pantalla completa)\n");
+	printf("Opciones:\n 1.Player1 vs Player2\n 2.Player vs CPU\n 3.Exit\n ");
+	while(1) {
+		if(scanf("%c",&input) == 1) {
+			if(input == '1') {
+				foo();
+				return 1;
+			} else if(input == '2') {
+				break;
+			}else if(input=='3'){
+				exit(1);
+			} 
+			else if(input != '\n') {
+				printf("Unknown command '%c'! Ignoring...\n",input);
+			}
+			
+		} else {
+			printf("Invalid input! Ignoring...\n");
+		}
+	}
+	return 0;
+ }
+
+
+-----------------------------------VERSION 2
+#include <stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+int i;
+int j;
+int dimension=7; char tablero[7][7];int opcion=-9; void initTablero(); int imprimirTablero(); void foo();int menu(void);void insertar(void);
+
+/* run this program using the console pauser or add your own getch, system("pause") or input loop */
+int main(void)
+{
+	foo();
+	initTablero();
+	imprimirTablero();
+	insertar();
+	return 0;
+ } 
+ 
+
+
+void initTablero(){
+	for(i=0;i< dimension;i++) {
+		
+		for( j= 0; j < dimension; j++)	{
+		tablero[i][j]=186;
+		if(j>0&&j<6){
+			tablero[i][j]=205;
+		}
+		if(i>0&&i<5){
+				tablero[i][j]=186;
+			}
+		tablero[3][3]='+';
+		if(i==0&&j==0||i==0&&j==3||i==0&&j==6||i==1&&j==1||i==1&&j==3||i==1&&j==5||i==2&&j==2||i==2&&j==3||i==2&&j==4||i==3&&j==0||i==3&&j==1||i==3&&j==2||i==3&&j==4||i==3&&j==5||i==3&&j==6||i==4&&j==2||i==4&&j==3||i==4&&j==4||i==5&&j==1||i==5&&j==3||i==5&&j==5||i==6&&j==0||i==6&&j==3||i==6&&j==6) {
+			tablero[i][j]='O';
+		}
+		}
+		
+	}
+}
+
+void insertar(void){
+	int x;
+	char posicionI[512];
+	char posicionJ[512];
+	for(x=0;x<18;x++){
+		if(x%2==0){
+			printf("	PLAYER 1\n");
+		}
+		else if(x%2!=0){
+			printf("	PLAYER 2\n");
+		}
+		printf("Inserte la posicion de Fila(Numero): ");
+		scanf("%s", posicionI,stdin);
+		printf("Inserte la posicion de Columna(Letra): ");
+		scanf("%s", posicionJ,stdin);
+		if(tablero[atoi(posicionI)-1][atoi(posicionJ)-1]=='O'&&x%2==0){
+			tablero[atoi(posicionI)-1][atoi(posicionJ)-1]='1';
+	}
+		if(tablero[atoi(posicionI)-1][atoi(posicionJ)-1]=='O'&&x%2!=0){
+			tablero[atoi(posicionI)-1][atoi(posicionJ)-1]='2';		
+	}
+		imprimirTablero();
+	}
+	
+}
+
+
+
+
+
+
+int imprimirTablero(){
+	
+	printf("\n\n                                                                     A      B       C      D      F      G     H");
+	for(i = 0; i < dimension; i++ ){
+		printf("\n");
+		printf("\n");
+		printf("%d-",i+1);
+		for( j= 0; j < dimension; j++){
+			if (j==0){ 
+			printf("                                      			");
+			}
+			if(tablero[i][j]=='O'||tablero[i][j]=='1'||tablero[i][j]=='2'){
+				printf("    [%c]", tablero[i][j]);
+			}else printf("     %c ", tablero[i][j]);
+		}
+	 printf("\n");
+	}
+	return 0;
+}
+
+void foo() {
+	   FILE *title;
+   int c;
+   int counter=0;
+   title = fopen("foo.txt","r");
+   while(1) {
+      c = fgetc(title);
+      counter++;
+      if( counter==1512 ) { 
+         break ;
+      }
+      printf("%c", c);
+   }
+   fclose(title);
+}
+int menu(void){
+ 	char input = 0;
+	printf("Bienvenido a Cowboy Checkers!(Usar Pantalla completa)\n");
+	printf("Opciones:\n 1.Player1 vs Player2\n 2.Player vs CPU\n 3.Exit\n ");
+	while(1) {
+		if(scanf("%c",&input) == 1) {
+			if(input == '1') {
+				foo();
+				return 1;
+			} else if(input == '2') {
+				break;
+			}else if(input=='3'){
+				exit(1);
+			} 
+			else if(input != '\n') {
+				printf("Unknown command '%c'! Ignoring...\n",input);
+			}
+			
+		} else {
+			printf("Invalid input! Ignoring...\n");
+		}
+	}
+	return 0;
+ }
