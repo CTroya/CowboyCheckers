@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
-
+int piezasRestantes; char p1='1'; char p2='2';
 int i;
 int j;
-int dimension=7; char tablero[7][7];int opcion=-9; void initTablero(); int imprimirTablero(); void foo();int menu(void);void insertar(void);int checkMolino();int validarEntradaI(char entrada[]); char validarEntradaJ(char entrada[]);
+int dimension=7; char tablero[7][7];int opcion=-9; void initTablero(); int imprimirTablero(); void foo();int menu(void);void insertar(void);int checkMolino();int validarEntradaI(char entrada[]); char validarEntradaJ(char entrada[]); int cantidadPiezas(char a); void quitarPieza(void);
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 int main(void)
@@ -35,52 +35,56 @@ void initTablero(void){
 }
 
 void insertar(void){
-	int posicI;
-	int posicJ;
+	int posicJ; int posicI; char player1[20]; char player2[20]; //Guarda el nombre de los jugadores y las posiciones de entrada
 	int bandera=0;//El valor de la bandera sera de 1 si la posicion de insercion es valida
-	char player1[20];
-	char player2[20]; //Guarda el nombre de los jugadores
+	
 	printf("Inserte el nombre de los jugadores:\n");
-	scanf("%s",player1,stdin);
-	scanf("%s",player2,stdin);
-	int piezasRestantes;
-	char posicionI[512];
-	char posicionJ[512];
+	scanf("%s", player1, stdin);
+	scanf("%s", player2, stdin);
+	 
+	 char posicionI[512]; char posicionJ[512];
 	for(piezasRestantes=0;piezasRestantes<18;piezasRestantes++){ // una vez termine checkmolino tengo que poner dentro de la condicional del for loop
+		printf("							Player 1: Cant de piezas en juego: %d\n							Player 2: Cant de piezas en juego: %d\n", cantidadPiezas(p1), cantidadPiezas(p2));
 		if(piezasRestantes%2==0){
-			printf("	Player1: %s\n",player1);
+			printf("	Player1: %s\n", player1);
 		}
 		if(piezasRestantes%2!=0){
 			printf("	PLAYER 2: %s\n", player2);
 		}
 		printf("Inserte la posicion de Fila(Numero): ");
-		scanf("%s", posicionI,stdin);
+		scanf("%s", posicionI, stdin);
 		printf("Inserte la posicion de Columna(Letra): ");
-		scanf("%s", posicionJ,stdin);
-		posicI=validarEntradaI(posicionI)-1;
-		posicJ=validarEntradaJ(posicionJ)-65;
+		scanf("%s", posicionJ, stdin);
+		posicI = validarEntradaI(posicionI) - 1;
+		posicJ = validarEntradaJ(posicionJ) - 65;
 		printf("%d %d",posicJ, posicI);
-		if(tablero[posicI][posicJ]=='0'){
-			bandera=1;
+		if(tablero[posicI][posicJ]!='O'){
+			bandera = 1;
 		}
-		if(piezasRestantes%2!=0&&bandera==1){
-			tablero[posicI][posicJ]='2';
-		}
-		if(piezasRestantes%2==0) {
-			tablero[posicI][posicJ]='1';
-		}
-			imprimirTablero();
-		}//Bloque que nos vuelve a preguntar por la posicion si el dato ingresado es incorrecto
-		/*while(validarEntradaI(posicionI)==0||validarEntradaJ(posicionJ)==0||bandera==0){
-			printf("Bruh\n");
-			printf("Inserte la posicion de Fila(Numero): ");
+		while(bandera == 1){	//Bloque que nos vuelve a preguntar por la posicion si el dato ingresado es incorrecto
+			printf("Posicion Invalida\n");
+			printf("Reinserte la posicion de Fila(Numero): ");
 			scanf("%s", posicionI,stdin);
-			printf("Inserte la posicion de Columna(Letra): ");
+			printf("Reinserte la posicion de Columna(Letra): ");
 			scanf("%s", posicionJ,stdin);
-		
-		}*/
-			
-	}		
+			posicI = validarEntradaI(posicionI) - 1;
+			posicJ = validarEntradaJ(posicionJ) - 65;
+			if(tablero[posicI][posicJ]=='O'){
+				bandera = 0;
+			}	
+		}
+		if(bandera == 0){//Si la bandera no cambia de valor es porque la posicion es valida y entonces se ingresa la pieza
+			if(piezasRestantes%2!=0){
+			tablero[posicI][posicJ]='2';
+			}
+			if(piezasRestantes%2==0) {
+			tablero[posicI][posicJ]='1';
+			}
+		}
+		imprimirTablero();
+		checkMolino();
+	}
+}		
 
 /* Retornos de checkMolino
 	0=No hay molinos
@@ -89,16 +93,22 @@ void insertar(void){
 int checkMolino(){
 	int i;
 	int j;
-	int piezasAlineadas;
-	for(i = 0;i < dimension;i++){//este loop recorre y verifica los molinos en filas
+	int piezasAlineadas1 = 0;
+	int piezasAlineadas2 = 0;
+	for(i = 0;i < dimension;i++){//este nested loop recorre y verifica los molinos en filas
 		for(j = 0;j < dimension; j++){
-			if(tablero[i][j]=='1'||tablero[i][j]=='2'){
-				piezasAlineadas++;
+			if(tablero[i][j]=='1'){
+				piezasAlineadas1++;
 			}
+			if(tablero[i][j]=='2'){
+				piezasAlineadas2++;
+			}	
 		}
-	if(piezasAlineadas>=3){
-		printf("sosfacha\n");
-	}piezasAlineadas=0;
+	if(piezasAlineadas1>=3||piezasAlineadas2>=3){//PARA PROBAR WIP
+		printf("MOLINO");
+	}
+	piezasAlineadas1=0;
+	piezasAlineadas2=0;
 	}
 }
 
@@ -189,5 +199,21 @@ char validarEntradaJ(char entrada[]){
 		bandera=0;
 		return bandera;
 	}
-	return entrada[0];
+	return toupper(entrada[0]);
+}
+
+int cantidadPiezas(char a){
+	int x; int y;
+	int cantPiezas = 0;
+	for(x=0;x<dimension;x++){//este nested loop busca todos los caracteres iguales al parametro que recibe y retorna la cantidad de caracteres iguales
+		for(y=0;y<dimension;y++){
+			if (tablero[x][y]==a){
+				cantPiezas++;
+			}
+		}
+	}
+	return cantPiezas;
+}
+void quitarPieza(){
+	
 }
