@@ -1,23 +1,23 @@
 #include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-char player1[10] , player2[10]; //Guarda el nombre de los jugadores
+#include <ctype.h>
+
 int i;
 int j;
-int dimension=7; char tablero[7][7];int opcion=-9; void initTablero(); int imprimirTablero(); void foo();int menu(void);void insertar(void);int checkMolino();
+int dimension=7; char tablero[7][7];int opcion=-9; void initTablero(); int imprimirTablero(); void foo();int menu(void);void insertar(void);int checkMolino();int validarEntradaI(char entrada[]); char validarEntradaJ(char entrada[]);
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 int main(void)
-{
+{	
+	foo();
 	initTablero();
-	insertar();
+	imprimirTablero();
+	menu();
 	return 0;
- } 
- 
+} 
 
-
-void initTablero(){
+void initTablero(void){
 	for(i = 0;i< dimension;i++) {
 		for( j = 0; j < dimension; j++){
 			if(j > 0&& j < 6){
@@ -35,41 +35,57 @@ void initTablero(){
 }
 
 void insertar(void){
+	int posicI;
+	int posicJ;
+	int bandera=0;//El valor de la bandera sera de 1 si la posicion de insercion es valida
+	char player1[20];
+	char player2[20]; //Guarda el nombre de los jugadores
+	printf("Inserte el nombre de los jugadores:\n");
+	scanf("%s",player1,stdin);
+	scanf("%s",player2,stdin);
 	int piezasRestantes;
 	char posicionI[512];
 	char posicionJ[512];
-	for(piezasRestantes=0;piezasRestantes<1;piezasRestantes++){
+	for(piezasRestantes=0;piezasRestantes<18;piezasRestantes++){ // una vez termine checkmolino tengo que poner dentro de la condicional del for loop
 		if(piezasRestantes%2==0){
-			printf("	PLAYER 1\n");
+			printf("	Player1: %s\n",player1);
 		}
-		else if(piezasRestantes%2!=0){
-			printf("	PLAYER 2\n");
+		if(piezasRestantes%2!=0){
+			printf("	PLAYER 2: %s\n", player2);
 		}
 		printf("Inserte la posicion de Fila(Numero): ");
-		int check1=scanf("%s", posicionI,stdin);
-		while(check1!=1||strtof(posicionI,NULL)<1||strtof(posicionI,NULL)>7||strtof(posicionI,NULL)==0){
-			printf("Inserte la posicion de Fila(Numero): ");
-			check1=scanf("%s",512, posicionI,stdin);
-		}
+		scanf("%s", posicionI,stdin);
 		printf("Inserte la posicion de Columna(Letra): ");
-		int check2=scanf("%s", posicionJ,stdin);
-		while(check2!=1||strtof(posicionJ,NULL)<1||strtof(posicionJ,NULL)>7){
-			printf("Inserte la posicion de Fila(Numero): ");
-			check1=scanf("%s",512, posicionJ,stdin);
+		scanf("%s", posicionJ,stdin);
+		posicI=validarEntradaI(posicionI)-1;
+		posicJ=validarEntradaJ(posicionJ)-65;
+		printf("%d %d",posicJ, posicI);
+		if(tablero[posicI][posicJ]=='0'){
+			bandera=1;
 		}
-		if(tablero[atoi(posicionI)-1][atoi(posicionJ)-1]=='O'){
-			if(piezasRestantes%2==0){
-				tablero[atoi(posicionI)-1][atoi(posicionJ)-1]='1';
-			}else{
-				tablero[atoi(posicionI)-1][atoi(posicionJ)-1]='2';
-			}		
-		}	
-		imprimirTablero();	
+		if(piezasRestantes%2!=0&&bandera==1){
+			tablero[posicI][posicJ]='2';
+		}
+		if(piezasRestantes%2==0) {
+			tablero[posicI][posicJ]='1';
+		}
+			imprimirTablero();
+		}//Bloque que nos vuelve a preguntar por la posicion si el dato ingresado es incorrecto
+		/*while(validarEntradaI(posicionI)==0||validarEntradaJ(posicionJ)==0||bandera==0){
+			printf("Bruh\n");
+			printf("Inserte la posicion de Fila(Numero): ");
+			scanf("%s", posicionI,stdin);
+			printf("Inserte la posicion de Columna(Letra): ");
+			scanf("%s", posicionJ,stdin);
+		
+		}*/
+			
 	}		
-}
-/*0=No hay molinos
-  1=Molino Blanco
-  2=Molino Negro	*/
+
+/* Retornos de checkMolino
+	0=No hay molinos
+	1=Molino Blanco
+	2=Molino Negro	*/
 int checkMolino(){
 	int i;
 	int j;
@@ -123,7 +139,7 @@ void foo() {
       printf("%c", c);
    }
    fclose(title);
-}
+}	
 int menu(void){
  	char input = 0;
 	printf("Bienvenido a Cowboy Checkers!(Usar Pantalla completa)\n");
@@ -131,7 +147,7 @@ int menu(void){
 	while(1) {
 		if(scanf("%c",&input) == 1) {
 			if(input == '1') {
-				foo();
+				insertar();
 				return 1;
 			} else if(input == '2') {
 				break;
@@ -148,5 +164,30 @@ int menu(void){
 	}
 	return 0;
  }
- 
- 
+int validarEntradaI(char entrada[]){
+	int x;
+	int bandera;
+	int len=0;
+	for(x=0;entrada[x]!='\0';x++){
+		len++;
+	}
+	if (len != 1||0==atoi(entrada)){
+		bandera=0;
+		return bandera;
+	}
+	return atoi(entrada);
+}
+char validarEntradaJ(char entrada[]){
+	int x;
+	int bandera;
+	int len=0;
+	for(x=0;entrada[x]!='\0';x++){
+		len++;
+	}
+	char caracter1=toupper(entrada[0]);
+	if(len!=1||caracter1<65||caracter1>90){
+		bandera=0;
+		return bandera;
+	}
+	return entrada[0];
+}
