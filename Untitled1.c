@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
-int piezasRestantes; char p1='1'; char p2='2'; int posicJ; int posicI;
+int piezasRestantes; char piezaEnemiga; int posicJ; int posicI;
 int i;
 int j;
 int dimension=7; char tablero[7][7];int opcion=-9; void initTablero(); int imprimirTablero(); void foo();int menu(void);void insertar(void);int checkMolino();int validarEntradaI(char entrada[]); char validarEntradaJ(char entrada[]); int cantidadPiezas(char a); void quitarPieza(void);
@@ -37,19 +37,20 @@ void initTablero(void){
 void insertar(void){//tengo que ver wtf se printeo mi codigo en el shell la vez pasada xd
 	char player1[20]; char player2[20]; //Guarda el nombre de los jugadores y las posiciones de entrada
 	int bandera=0;//El valor de la bandera sera de 1 si la posicion de insercion es valida
-	
 	printf("Inserte el nombre de los jugadores:\n");
 	scanf("%s", player1, stdin);
 	scanf("%s", player2, stdin);
 	printf("\nPeriodo de insercion de piezas\nAmbos jugadores pueden insertar 9 Piezas\n"); //tengo que explicar mejor esta parte xd
 	 char posicionI[512]; char posicionJ[512];
 	for(piezasRestantes=0;piezasRestantes<18;piezasRestantes++){ // una vez termine checkmolino tengo que poner dentro de la condicional del for loop
-		printf("							Player 1: Cant de piezas en juego: %d\n							Player 2: Cant de piezas en juego: %d\n", cantidadPiezas(p1), cantidadPiezas(p2));
+		printf("							Player 1: Cant de piezas en juego: %d\n							Player 2: Cant de piezas en juego: %d\n", cantidadPiezas('1'), cantidadPiezas('2'));
 		if(piezasRestantes%2==0){
 			printf("	Player1: %s\n", player1);
+			piezaEnemiga='2';
 		}
 		if(piezasRestantes%2!=0){
 			printf("	PLAYER 2: %s\n", player2);
+			piezaEnemiga='1';
 		}
 		
 		printf("Inserte la posicion de Columna(Letra): ");
@@ -187,7 +188,7 @@ int validarEntradaI(char entrada[]){//Verifica las entradas de numeros de un dig
 		return bandera;
 	}
 	return atoi(entrada);
-}
+}//estas funciones se pueden hacer con isdigit(), si tan solo alguien me podia decir que eso existia antes que haga ._.
 char validarEntradaJ(char entrada[]){//Verifica las entradas de numeros de una Letra
 	int x;
 	int bandera;
@@ -214,25 +215,32 @@ int cantidadPiezas(char a){
 		}
 	}
 	return cantPiezas;
-}
+}//printf("							Player 1: Cant de piezas en juego: %d\n							Player 2: Cant de piezas en juego: %d\n", cantidadPiezas('1'), cantidadPiezas('2'));
 void quitarPieza(){
-	char quitarI[512];
-	char quitarJ[512];
+	int quitarI;
+	int quitarJ;
+	char stringI[512];
+	char stringJ[512];
 	printf("Se genero un molino, el jugador puede sacar una pieza enemiga\n"); //otra vez me parece dm fea la explicacion xd se nota ese 2 en comunicacion 
 	printf("Inserte la posicion de Columna(Letra): ");
-	scanf("%s", quitarI,stdin);
+	scanf("%s", stringJ,stdin);
 	printf("Inserte la posicion de Fila(Numero): ");
-	scanf("%s", quitarJ,stdin);
-	while(validarposicionI(quitarI)==0||validarposicionI(quitarJ)==0){
-		printf("Has ingresado un valor incorrecto")
+	scanf("%s", stringI,stdin);
+	quitarI=validarEntradaI(stringI)-1;
+	quitarJ=validarEntradaJ(stringJ)-65;
+	while(quitarI==-1||quitarJ==-65||tablero[quitarI][quitarJ]!=piezaEnemiga){
+		printf("Has ingresado una posicion incorrecta\n");
 		printf("Reinserte la posicion de Columna(Letra): ");
-		scanf("%s", quitarI,stdin);
+		scanf("%s", stringJ,stdin);
 		printf("Reinserte la posicion de Fila(Numero): ");
-		scanf("%s", quitarJ,stdin);
+		scanf("%s", stringI,stdin);
+		quitarI=validarEntradaI(stringI)-1;
+		quitarJ=validarEntradaJ(stringJ)-65;
+		printf("quitarI: %d\nquitarJ: %d",quitarI,quitarJ);
 	}
-	quitarI=validarposicionI(quitarI)-65;
-	quitarJ=validarposicionJ(quitarJ)-1;
+	printf("quitarI: %d\nquitarJ: %d",quitarI,quitarJ);
+	tablero[quitarI][quitarJ]='O';
+	imprimirTablero();
 }
-void actualizarPosic(char i[] char j[]){//que paja me da hacer esto por lo del player 1 y 2 asaaaash :/ necesito un compañero asdsad 
-	
+void actualizarPosic(char i[] , char j[]){//que paja me da hacer esto por lo del player 1 y 2 asaaaash :/ necesito un compañero asdsad 
 }
