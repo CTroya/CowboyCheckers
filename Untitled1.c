@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
+#include <stdbool.h>
 int piezasRestantes; char piezaEnemiga; int posicJ; int posicI;
 int i;
 int j;
-int dimension=7; char tablero[7][7];int opcion=-9; void initTablero(); int imprimirTablero(); void foo();int menu(void);void insertar(void);int checkMolino();int validarEntradaI(char entrada[]); char validarEntradaJ(char entrada[]); int cantidadPiezas(char a); void quitarPieza(void);
+int dimension=7; char tablero[7][7];int opcion=-9; void initTablero(); int imprimirTablero(); void foo();int menu(void);void insertar(void);int checkMolino();int validarEntradaI(char entrada[]); char validarEntradaJ(char entrada[]); int cantidadPiezas(char a); void quitarPieza(void); void moverPieza(void);
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 int main(void)
@@ -13,7 +14,7 @@ int main(void)
 	foo();
 	initTablero();
 	imprimirTablero();
-	menu();
+	insertar();
 	return 0;
 } 
 
@@ -40,10 +41,9 @@ void insertar(void){//tengo que ver wtf se printeo mi codigo en el shell la vez 
 	printf("Inserte el nombre de los jugadores:\n");
 	scanf("%s", player1, stdin);
 	scanf("%s", player2, stdin);
-	printf("\nPeriodo de insercion de piezas\nAmbos jugadores pueden insertar 9 Piezas\n"); //tengo que explicar mejor esta parte xd
 	 char posicionI[512]; char posicionJ[512];
+	 printf("\nPeriodo de insercion de piezas\nAmbos jugadores pueden insertar 9 Piezas\n"); //tengo que explicar mejor esta parte xd
 	for(piezasRestantes=0;piezasRestantes<18;piezasRestantes++){ // una vez termine checkmolino tengo que poner dentro de la condicional del for loop
-		printf("							Player 1: Cant de piezas en juego: %d\n							Player 2: Cant de piezas en juego: %d\n", cantidadPiezas('1'), cantidadPiezas('2'));
 		if(piezasRestantes%2==0){
 			printf("	Player1: %s\n", player1);
 			piezaEnemiga='2';
@@ -119,7 +119,6 @@ int checkMolino(){//global posicI posicJ son las ultimas jugadas realizadas
 
 
 int imprimirTablero(){
-	
 	printf("\n\n                                                             A    B    C    D    E    F    G");
 	for(i = 0; i < dimension; i++ ){
 		printf("\n");
@@ -134,6 +133,8 @@ int imprimirTablero(){
 		}	
 	}
 	printf("\n");
+	printf("							Player 1: Cant de piezas en juego: %d\n", cantidadPiezas('1'));
+	printf("							Player 2: Cant de piezas en juego: %d\n",cantidadPiezas('2'));
 	return 0;
 }
 
@@ -191,15 +192,13 @@ int validarEntradaI(char entrada[]){//Verifica las entradas de numeros de un dig
 }//estas funciones se pueden hacer con isdigit(), si tan solo alguien me podia decir que eso existia antes que haga ._.
 char validarEntradaJ(char entrada[]){//Verifica las entradas de numeros de una Letra
 	int x;
-	int bandera;
 	int len=0;
 	for(x=0;entrada[x]!='\0';x++){
 		len++;
 	}
 	char caracter1=toupper(entrada[0]);
-	if(len!=1||caracter1<65||caracter1>90){
-		bandera=0;
-		return bandera;
+	if(len!=1||caracter1<65||caracter1>71){
+		return 0;
 	}
 	return toupper(entrada[0]);
 }
@@ -215,32 +214,53 @@ int cantidadPiezas(char a){
 		}
 	}
 	return cantPiezas;
-}//printf("							Player 1: Cant de piezas en juego: %d\n							Player 2: Cant de piezas en juego: %d\n", cantidadPiezas('1'), cantidadPiezas('2'));
+}
 void quitarPieza(){
+	int counter=0;//simplemente cuenta las veces que se pidio la posicion para luego dar una notificacion de error de insercion
 	int quitarI;
 	int quitarJ;
 	char stringI[512];
 	char stringJ[512];
 	printf("Se genero un molino, el jugador puede sacar una pieza enemiga\n"); //otra vez me parece dm fea la explicacion xd se nota ese 2 en comunicacion 
-	printf("Inserte la posicion de Columna(Letra): ");
-	scanf("%s", stringJ,stdin);
-	printf("Inserte la posicion de Fila(Numero): ");
-	scanf("%s", stringI,stdin);
-	quitarI=validarEntradaI(stringI)-1;
-	quitarJ=validarEntradaJ(stringJ)-65;
+	quitarI=-1;
+	quitarJ=-65;
 	while(quitarI==-1||quitarJ==-65||tablero[quitarI][quitarJ]!=piezaEnemiga){
-		printf("Has ingresado una posicion incorrecta\n");
-		printf("Reinserte la posicion de Columna(Letra): ");
+		if(counter>0){
+			printf("Has ingresado una posicion incorrecta\n");
+		}
+		printf("Inserte la posicion de Columna(Letra): ");
 		scanf("%s", stringJ,stdin);
-		printf("Reinserte la posicion de Fila(Numero): ");
+		printf("Inserte la posicion de Fila(Numero): ");
 		scanf("%s", stringI,stdin);
 		quitarI=validarEntradaI(stringI)-1;
 		quitarJ=validarEntradaJ(stringJ)-65;
-		printf("quitarI: %d\nquitarJ: %d",quitarI,quitarJ);
+		counter++;
 	}
-	printf("quitarI: %d\nquitarJ: %d",quitarI,quitarJ);
 	tablero[quitarI][quitarJ]='O';
 	imprimirTablero();
+	
 }
-void actualizarPosic(char i[] , char j[]){//que paja me da hacer esto por lo del player 1 y 2 asaaaash :/ necesito un compañero asdsad 
+void moverPieza(void){//que paja me da hacer esto por lo del player 1 y 2 asaaaash :/ necesito un compañero asdsad 
+	
 }
+int jugadasPosibles(int pi , int pj){
+	int casillasLibresI=0;
+	int casillasLibresJ=0;
+	int i; int j;
+	for(j=0;j>dimension;j++){//esto creo que se puede hacer mas optimo
+		if(tablero[pi][j]=='O'){
+			casillasLibresJ++;
+		}
+	}
+	for(i=0;i>dimension;i++){//esto creo que se puede hacer mas optimo
+		if(tablero[i][pj]=='O'){
+			casillasLibresI++;
+		}
+	}
+}
+int totalesPosibles(){
+	int totalesLibres=0;
+	int casillasLibresJ=0;
+	int i; int j;
+}
+
