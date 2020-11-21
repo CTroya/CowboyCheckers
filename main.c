@@ -4,17 +4,16 @@
 #include <ctype.h>
 #include <stdbool.h>
 #define dimension 7 
-int piezasRestantes; char piezaEnemiga; int posicJ; int posicI;
+#include <time.h>
+int piezasRestantes; char piezaEnemiga; int posicJ; int posicI; int randPLayer();
 char tablero[7][7];int opcion=-9; void initTablero(); int imprimirTablero(); void foo();int menu(void);void insertar(void);int checkMolino();int validarEntradaI(char entrada[]); char validarEntradaJ(char entrada[]); int cantidadPiezas(char a); void quitarPieza(void); void moverPieza(void);
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 int main(void)
 {	
-	foo();
-	initTablero();
-	imprimirTablero();
-	menu();
-	insertar();
+	int num;
+	num=randPlayer();
+	printf("%d",num);
 	return 0;
 } 
 
@@ -320,4 +319,7 @@ int totalesPosibles(char pieza){
 		}
 	}
 }
+}
+int randPLayer(){
+	return 1;
 }
