@@ -5,15 +5,16 @@
 #include <stdbool.h>
 #define dimension 7 
 #include <time.h>
-int piezasRestantes; char piezaEnemiga; int posicJ; int posicI; int randPLayer();
+int piezasRestantes; char piezaEnemiga; int posicJ; int posicI; int binRand();
 char tablero[7][7];int opcion=-9; void initTablero(); int imprimirTablero(); void foo();int menu(void);void insertar(void);int checkMolino();int validarEntradaI(char entrada[]); char validarEntradaJ(char entrada[]); int cantidadPiezas(char a); void quitarPieza(void); void moverPieza(void);
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 int main(void)
 {	
-	int num;
-	num=randPlayer();
-	printf("%d",num);
+	foo();
+	initTablero();
+	imprimirTablero();
+	insertar();
 	return 0;
 } 
 
@@ -36,23 +37,12 @@ void initTablero(void){
 }
 
 void insertar(void){//tengo que ver wtf se printeo mi codigo en el shell la vez pasada xd
-	char player1[20]; char player2[20]; //Guarda el nombre de los jugadores y las posiciones de entrada
+	char player1[20]; //Guarda el nombre de los jugadores y las posiciones de entrada
 	int bandera=0;//El valor de la bandera sera de 1 si la posicion de insercion es valida
 	printf("Inserte el nombre de los jugadores:\n");
 	scanf("%s", player1, stdin);
-	scanf("%s", player2, stdin);
 	 char posicionI[512]; char posicionJ[512];
 	 printf("\nPeriodo de insercion de piezas\nAmbos jugadores pueden insertar 9 Piezas\n"); //tengo que explicar mejor esta parte xd
-	for(piezasRestantes=0;piezasRestantes<18;piezasRestantes++){ // una vez termine checkmolino tengo que poner dentro de la condicional del for loop
-		if(piezasRestantes%2==0){
-			printf("	Player1: %s\n", player1);
-			piezaEnemiga='2';
-		}
-		if(piezasRestantes%2!=0){
-			printf("	PLAYER 2: %s\n", player2);
-			piezaEnemiga='1';
-		}
-		
 		printf("Inserte la posicion de Columna(Letra): ");
 		scanf("%s", posicionJ, stdin);
 		printf("Inserte la posicion de Fila(Numero): ");
@@ -88,8 +78,7 @@ void insertar(void){//tengo que ver wtf se printeo mi codigo en el shell la vez 
 		}
 		imprimirTablero();
 		checkMolino();
-	}//tengo que rehacer esta funcion, dm fea está xd
-}		
+}//tengo que rehacer esta funcion, dm fea está xd
 
 /* Retornos de checkMolino
 	0=No hay molinos
@@ -126,7 +115,7 @@ int checkMolino(){//global posicI posicJ son las ultimas jugadas realizadas
 		}
 	}
 	if(posicJ==3){//se verifica la excepcion de la COLUMNA central
-		if(posicJ>3){
+		if(posicI>3){
 			i=4;
 			finI=dimension;
 		}
@@ -320,6 +309,23 @@ int totalesPosibles(char pieza){
 	}
 }
 }
-int randPLayer(){
-	return 1;
+int binRand(){
+	srand(time(NULL));
+	return rand()%2;
 }
+/*char player1[20]; char player2[20]; //Guarda el nombre de los jugadores y las posiciones de entrada
+	int bandera=0;//El valor de la bandera sera de 1 si la posicion de insercion es valida
+	printf("Inserte el nombre de los jugadores:\n");
+	scanf("%s", player1, stdin);
+	scanf("%s", player2, stdin);
+	 char posicionI[512]; char posicionJ[512];
+	 printf("\nPeriodo de insercion de piezas\nAmbos jugadores pueden insertar 9 Piezas\n"); //tengo que explicar mejor esta parte xd
+	for(piezasRestantes=0;piezasRestantes<18;piezasRestantes++){ // una vez termine checkmolino tengo que poner dentro de la condicional del for loop
+		if(piezasRestantes%2==0){
+			printf("	Player1: %s\n", player1);
+			piezaEnemiga='2';
+		}
+		if(piezasRestantes%2!=0){
+			printf("	PLAYER 2: %s\n", player2);
+			piezaEnemiga='1';
+		}*/
