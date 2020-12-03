@@ -6,41 +6,85 @@
 #include <stdbool.h>
 #define dimension 7 
 #include <time.h>
-char tablero[7][7];int opcion=-9;int piezasRestantes=9; char piezaEnemiga; char piezaAliada; char piezaEnemigaBot; char piezaAliadaBot;
-int posicJ; int posicI; int bando; //posic guarda la ultima jugada realizada
+#include <windows.h>
+char tablero[7][7];int piezasRestantes=3; char piezaEnemiga; char piezaAliada; char piezaEnemigaBot; char piezaAliadaBot;int bando,turnos=6;
+int posicJ; int posicI; int quitarI; int quitarJ;//guarda la ultima jugada realizada
 
-void initTablero(); int imprimirTablero(); void foo();int menu(void);//Funciones de inicializacion/setup
-void insertar(void); void jugarBot(char jugada); void quitarPieza(void); void moverPieza(void); //Funciones de jugadas
-int validarEntradaI(char entrada[]); char validarEntradaJ(char entrada[]); bool esNumero();//Funciones de error handling
-int binRand(); void debug(void); int welcome(); void etapaInsertar(); int getTurnos(); int cantidadPiezas(char a); int checkMolino();// funciones misc
+void initTablero(); int imprimirTablero(); void foo();int menu();//Funciones de inicializacion/setup
 
+void insertar();void jugarBot(char jugada); void quitarPieza(char pieza); void moverPieza(); void moverPieza(); void moverPiezaBot(); void etapaMover();
+ //Funciones de jugadas
+ 
+int validarEntradaI(char entrada[]) ; char validarEntradaJ(char entrada[]) ; bool esNumero() ; bool verificarJugada(int oldI, int oldJ,int newI, int newJ);
+//Funciones de error handling
+
+void debug(); int welcome(); void etapaInsertar(); int getTurnos(); int cantidadPiezas(char a); int checkMolino();// funciones misc
+/*Check jugada valida
+  podes hacer un for que vaya desde posicN hasta tablero[i] y 
+  buscas 'O'o '1' o '2', si es 'O' entonces 
+  añadimos a la cantidad de jugadas posibles para esa ficha*/
 int main(void)
-{	
+{			
 	foo();
 	initTablero();
 	imprimirTablero();
 	welcome();
 	etapaInsertar();
+	etapaMover();
 	return 0;
 } 
+void etapaMover(void){
+	printf("Ahora puedes mover tus piezas!\n");
+	printf("Elige las coordenadas de tu pieza a seleccionar, luego la coordenada a donde quieras moverla\n");
+	while(1){
+		moverPieza();
+	}
+}
+void moverPieza(void){
+	int counter=0;
+	int selectI=-1; char inputSelectI[512]; int moveI=-1;  char inputMoveI[512];
+	int selectJ=-65;char inputSelectJ[512];	int moveJ=-65; char inputMoveJ[512];
+	while(selectI==-1||selectJ==-65||tablero[selectI][selectJ]!=piezaAliada){
+		if(counter>0){
+			printf("Esa jugada es invalida! Tranquilo, ahora puedes ingresarla de nuevo.\n");
+		}
+		printf("Inserte la posicion de Columna a seleccionar(Letra): ");scanf("%s", inputSelectJ,stdin);
+		printf("Inserte la posicion de Fila a seleccionar(Numero): ");scanf("%s", inputSelectI,stdin);
+		selectI=validarEntradaI(inputSelectI)-1;
+		selectJ=validarEntradaJ(inputSelectJ)-65;
+		counter++;
+	}
+	printf("Seleccionaste %c %d. A donde la quieres mover?\n",selectJ+65,selectI+1);
+	counter=0;
+	while(moveI==-1||moveJ==-65||tablero[moveI][moveJ]!='O'||verificarJugada(selectI,selectJ,moveI,moveJ)==false){
+		if(counter>0){
+			printf("Esa jugada es invalida! Tranquilo, ahora puedes ingresarla de nuevo.\n");
+		}
+		printf("Inserte la posicion de Columna a mover(Letra): ");scanf("%s", inputMoveJ,stdin);
+		printf("Inserte la posicion de Fila a mover(Numero): ");scanf("%s", inputMoveI,stdin);
+		moveI=validarEntradaI(inputMoveI)-1;
+		moveJ=validarEntradaJ(inputMoveJ)-65;
+		counter++;
+	}
+	printf("Moviste %c-%d a %c-%d\n",selectJ+65,selectI+1,moveJ+65,moveI+1);
+}
+void moverPiezaBot(void){
+}
 
 int welcome(void){
 	srand(time(NULL));
 	bando=rand()%2; char nombre[512];
 	printf("Bienvenido a Cowboy Checkers!(Se recomienda usar Pantalla completa)\nDime. Como te llamas?\n");
 	scanf("%s",nombre,stdin);
+	nombre[0]=toupper(nombre[0]);
 	if(bando==0){
 		printf("Hola %s! Te ha tocado el bando 2. Ya puedes jugar ^^!",nombre);
-		piezaAliada = '2';
-		piezaEnemiga = '1';
-		piezaAliadaBot= '1';
-		piezaEnemigaBot= '2';
+		piezaAliada = '2'; piezaEnemiga = '1';
+		piezaAliadaBot= '1'; piezaEnemigaBot= '2';
 	}else{
 		printf("Hola %s! Te ha tocado el bando 1. Ya puedes jugar ^^!",nombre);
-		piezaAliada = '1';
-		piezaEnemiga = '2';
-		piezaAliadaBot= '2';
-		piezaEnemigaBot= '1';
+		piezaAliada = '1'; piezaEnemiga = '2';
+		piezaAliadaBot= '2'; piezaEnemigaBot= '1';
 	}
 	return 0;
  }
@@ -64,9 +108,35 @@ void initTablero(void){
 	}
 }
 
+void etapaInsertar(){
+	int i;
+	printf("\nPeriodo de insercion de piezas. Ambos jugadores pueden insertar 9 Piezas\n"); //tengo que explicar mejor esta parte xd
+	if(piezaAliada=='1'){
+		for(i=0;i<piezasRestantes;i++){
+			insertar();
+			jugarBot('i');
+			imprimirTablero();
+			if(tablero[posicI][posicJ]=='O'){
+				printf("La computadora ha sacado a %c-%d!\n",posicJ+65,posicI+1);
+			}else{
+				printf("La computadora jugo %c-%d\n",posicJ+65,posicI+1);
+			}
+		}
+	}else{
+		for(i=0;i<piezasRestantes;i++){
+			jugarBot('i');
+			imprimirTablero();
+			printf("La computadora jugo %c-%d\n",posicJ+65,posicI+1);
+			insertar();
+	}
+	}
+	imprimirTablero();
+}
+
 void insertar(void){//tengo que ver wtf se printeo mi codigo en el shell la vez pasada xd
 	int bandera=1;//El valor de la bandera sera de 1 si la posicion de insercion es valida
-	char posicionI[512]; char posicionJ[512]; int counter=0;
+	int counter=0;
+	char posicionI[512]; char posicionJ[512];
 	while(bandera == 1){	//Bloque que nos vuelve a preguntar por la posicion si el dato ingresado es incorrecto
 		if(counter>0){
 			printf("Has insertado una posicion invalida! Tranquilo, ahora puedes ingresarla de nuevo.\n");
@@ -80,11 +150,7 @@ void insertar(void){//tengo que ver wtf se printeo mi codigo en el shell la vez 
 			bandera = 0;
 		}
 	}
-	if(piezasRestantes%2!=bando){
-		tablero[posicI][posicJ]='2';
-	}else{
-		tablero[posicI][posicJ]='1';
-	}
+	tablero[posicI][posicJ]=piezaAliada;
 	checkMolino();
 }
 
@@ -111,31 +177,6 @@ void jugarBot(char jugada){//jugada==i. Insertar pieza/ q.Quitar pieza   / m.Mov
 	}
 }
 
-
-void etapaInsertar(){
-	int i;
-	printf("\nPeriodo de insercion de piezas\nAmbos jugadores pueden insertar 9 Piezas\n"); //tengo que explicar mejor esta parte xd
-	if(piezaAliada=='1'){
-		for(i=0;i<piezasRestantes;i++){
-			insertar();
-			jugarBot('i');
-			imprimirTablero();
-			if(tablero[posicI][posicJ]=='O'){
-				printf("La computadora ha sacado a %c-%d!\n",posicJ+65,posicI+1);
-			}else{
-				printf("La computadora jugo %c-%d\n",posicJ+65,posicI+1);
-			}
-		}
-	}else{
-		for(i=0;i<piezasRestantes;i++){
-			jugarBot('i');
-			imprimirTablero();
-			printf("La computadora jugo %c-%d\n",posicJ+65,posicI+1);
-			insertar();
-			imprimirTablero();
-	}
-	}
-}
 int checkMolino(){//global posicI posicJ son las ultimas jugadas realizadas
 	int i; int finI;
 	int j; int finJ;
@@ -188,18 +229,18 @@ int checkMolino(){//global posicI posicJ son las ultimas jugadas realizadas
 		}
 	}
 }
-	if(piezasAlineadasi==3 || piezasAlineadasj==3 && tablero[posicI][posicJ]==piezaAliadaBot){
+	if(piezasAlineadasi==3 || piezasAlineadasj==3){
 		imprimirTablero();
+		if(tablero[posicI][posicJ]==piezaAliadaBot){
 		printf("La computadora jugo %c-%d\n",posicJ+65,posicI+1);
 		printf("Oh no! La computadora ha creado un molino y sacara una de tus piezas!\n");
 		jugarBot('q');
 		//printf("La computadora ha sacado a %c-%d!\n",posicJ+65,posicI+1);
-	}		
-	if(piezasAlineadasi==3 || piezasAlineadasj==3 && tablero[posicI][posicJ]==piezaAliada){//Si la pieza buscada es del jugador
-		imprimirTablero();
-		printf("Creaste un molino, ¡puedes sacar una pieza enemiga!\n");
-		quitarPieza();
-	}		
+		}else{
+			printf("Creaste un molino, puedes sacar una pieza enemiga!\n");
+			quitarPieza(piezaEnemiga);
+		}
+	}
 }
 int imprimirTablero(){
 	int i; int j;
@@ -223,6 +264,8 @@ int imprimirTablero(){
 }
 
 void foo() {
+	system("COLOR 06");
+	PlaySound(TEXT("music.wav"),NULL,SND_ASYNC);
 	   FILE *title;
    int c;
    int counter=0;
@@ -230,7 +273,7 @@ void foo() {
    while(1) {
       c = fgetc(title);
       counter++;
-      if( counter==1512 ) { 
+      if( counter==3000 ) { 
          break ;
       }
       printf("%c", c);
@@ -276,17 +319,14 @@ int cantidadPiezas(char a){
 	}
 	return cantPiezas;
 }
-void quitarPieza(){
-	int counter=0;//simplemente cuenta las veces que se pidio la posicion para luego dar una notificacion de error de insercion
-	int quitarI;
-	int quitarJ;
-	char stringI[512];
-	char stringJ[512]; 
+void quitarPieza(char pieza){
+	int counter=0;//simplemente cuenta las veces que se pidio la posicion para luego dar una notificacion de error de insercion 
+	char stringI[512]; char stringJ[512];
 	quitarI=-1;
 	quitarJ=-65;
-	while(quitarI==-1||quitarJ==-65||tablero[quitarI][quitarJ]!=piezaEnemiga){
+	while(quitarI==-1||quitarJ==-65||tablero[quitarI][quitarJ]!=pieza){
 		if(counter>0){
-			printf("Has ingresado una posicion incorrecta\n");
+			printf("Has insertado una posicion invalida! Tranquilo, ahora puedes ingresarla de nuevo.\n");
 		}
 		printf("Inserte la posicion de Columna(Letra): ");scanf("%s", stringJ,stdin);
 		printf("Inserte la posicion de Fila(Numero): ");scanf("%s", stringI,stdin);
@@ -295,13 +335,6 @@ void quitarPieza(){
 		counter++;
 	}
 	tablero[quitarI][quitarJ]='O';
-	imprimirTablero();
-	
-}
-void moverPieza(void){//que paja me da hacer esto por lo del player 1 y 2 asaaaash :/ necesito un compañero asdsad 
-	printf("Seleccione la pieza a mover: ");
-	quitarPieza();
-	
 }
 int jugadasPosibles(int pi , int pj){
 	int casillasLibresI=0;
@@ -322,18 +355,17 @@ int totalesPosibles(char pieza){
 }
 int getTurnos(){
 	char cantTurnos[512]; int i; int retorno=1; int counter=0; bool bandera=false;
-while(bandera==false){
+	while(bandera==false){
 		if(counter>0){
-			printf("Valor Invalido\n");
+			printf("Oh no! Has insertado un valor invalido!:(\n");
 		}
-		printf("Inserta la cantidad de turnos que el juego tendra: "); scanf("%s",cantTurnos,stdin);
+		printf("Elige la cantidad de turnos que el juego tendra: "); scanf("%s",cantTurnos,stdin);
 		counter++;
 		bandera=esNumero(cantTurnos);
 	}
 	return atoi(cantTurnos);
 }
-bool esNumero(const char *cadena) 
-{
+bool esNumero(const char *cadena) {
     while(*cadena != '\0')
     {
         if(*cadena < '0' || *cadena > '9')
@@ -341,6 +373,42 @@ bool esNumero(const char *cadena)
         cadena++;
     }
     return true;
+}
+
+int diffJ(int oldI, int oldJ,int newI, int newJ){
+	int j,i,diffJ=1;
+	if( oldI == 0 || oldI==6 ){
+		diffJ = 3;
+	}
+	if( oldI == 1 || oldI == 5 ){
+		diffJ = 2;
+	}
+	
+	return diffJ;
+}
+bool verificarJugada(int oldI, int oldJ,int newI, int newJ){
+	int j,i,diffI=1,diffJ=1; bool jugadaValida=false;
+//hallamos la distancia en las filas a la siguiente casilla libre en la matriz
+	if( oldI == 0 || oldI==6 ){
+		diffJ = 3;
+	}
+	if( oldI == 1 || oldI == 5 ){
+		diffJ = 2;
+	}
+//hallamos la distancia en las columnas a la siguiente casilla libre en la matriz
+	if( oldJ == 0 || oldJ == 6 ){
+		diffI = 3;
+	}
+	if( oldJ == 1 || oldJ == 5 ){
+		diffI = 2;
+	}
+	if(abs(oldJ-newJ)==diffJ){
+		jugadaValida=true;
+	}
+	if(abs(oldI-newI)==diffI){
+		jugadaValida=true;
+	}
+	return jugadaValida;
 }
 
 
